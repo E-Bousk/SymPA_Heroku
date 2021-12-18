@@ -26,7 +26,7 @@ class AdminController extends AbstractController
     }
 
     /**
-     * @Route("/categories/ajout", name="categories_ajout")
+     * @Route("/categories/add", name="categories_add")
      */
     public function ajoutCategories(Request $request): Response
     {
@@ -44,7 +44,7 @@ class AdminController extends AbstractController
             return $this->redirectToRoute('admin_home');
         }
 
-        return $this->render('admin/categories/ajout.html.twig', [
+        return $this->render('admin/categories/add.html.twig', [
             'form' => $form->createView()
         ]);
     }
