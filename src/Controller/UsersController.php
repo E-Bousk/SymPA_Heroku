@@ -26,7 +26,7 @@ class UsersController extends AbstractController
     }
 
     /**
-     * @Route("/annonces/add", name="users_annonces_ajout")
+     * @Route("/offers/create", name="users_offers_create")
      */
     public function ajoutAnnonce(Request $request): Response
     {

@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gérer les annonces
+{% endblock %}
+
+{% block body %}
+	<h1>Gérer les annonces</h1>
+	<div class="responsive-table">
+		<table class="table striped">
+			<thead>
+				<tr>
+					<th>ID #</th>
+					<th>Titre</th>
+					<th>Date</th>
+					<th>Active</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for annonce in annonces %}
+					<tr>
+						<td>{{ annonce.id }}</td>
+						<td>{{ annonce.title }}</td>
+						<td>{{ annonce.createdAt | date }}</td>
+						<td>
+							<label class="form-switch mt-2">
+								<input type="checkbox" {{ annonce.active ? 'checked' : '' }} data-id="{{ annonce.id }}">
+								<span class="slider"></span>
+							</label>
+						</td>
+						<td>
+							<a href="#" class="btn rounded-1 primary press modal-trigger" data-target="modal-delete" data-id="{{ annonce.id }}" data-title="{{ annonce.title }}">Supprimer</a>
+						</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+
+<div class="modal shadow-1 white rounded-3" id="modal-delete" data-ax="modal">
+	<div class="modal-header"><b>Supprimer une annonce</b></div>
+
+	<div class="divider"></div>
+
+	<div class="modal-content">
+	</div>
+
+	<div class="divider"></div>
+
+	<div class="modal-footer">
+		<a href="#" class="btn shadow-1 rounded-1 small secondary">Valider</a>
+		<a href="#" data-target="modal-delete" class="btn shadow-1 rounded-1 small primary modal-trigger">Annuler</a>
+		{# <button data-target="modal-delete" class="ml-auto btn shadow-1 rounded-1 small secondary modal-trigger">Valider</button> #}
+		{# <button data-target="modal-delete" class="btn shadow-1 rounded-1 small primary modal-trigger">Close</button> #}
+	</div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+	<script src="{{ asset('assets/js/toogleActiveAndDeleteModal.js') }}"></script>
+{% endblock %}
