@@ -1,40 +1,41 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Gérer les annonces
-{% endblock %}
+{% block title %}Gérer les annonces{% endblock %}
 
 {% block body %}
 	<h1>Gérer les annonces</h1>
-	<div class="responsive-table">
-		<table class="table striped">
-			<thead>
-				<tr>
-					<th>ID #</th>
-					<th>Titre</th>
-					<th>Date</th>
-					<th>Active</th>
-					<th>Actions</th>
-				</tr>
-			</thead>
-			<tbody>
-				{% for annonce in annonces %}
+	<div class="container">
+		<div class="responsive-table">
+			<table class="table striped">
+				<thead>
 					<tr>
-						<td>{{ annonce.id }}</td>
-						<td>{{ annonce.title }}</td>
-						<td>{{ annonce.createdAt | date }}</td>
-						<td>
-							<label class="form-switch mt-2">
-								<input type="checkbox" {{ annonce.active ? 'checked' : '' }} data-id="{{ annonce.id }}">
-								<span class="slider"></span>
-							</label>
-						</td>
-						<td>
-							<a href="#" class="btn rounded-1 primary press modal-trigger" data-target="modal-delete" data-id="{{ annonce.id }}" data-title="{{ annonce.title }}">Supprimer</a>
-						</td>
+						<th>ID #</th>
+						<th>Titre</th>
+						<th>Date</th>
+						<th>Active</th>
+						<th>Actions</th>
 					</tr>
-				{% endfor %}
-			</tbody>
-		</table>
+				</thead>
+				<tbody>
+					{% for annonce in annonces %}
+						<tr>
+							<td>{{ annonce.id }}</td>
+							<td>{{ annonce.title }}</td>
+							<td>{{ annonce.createdAt | date }}</td>
+							<td>
+								<label class="form-switch mt-2">
+									<input type="checkbox" {{ annonce.active ? 'checked' : '' }} data-id="{{ annonce.id }}">
+									<span class="slider"></span>
+								</label>
+							</td>
+							<td>
+								<a href="#" class="btn rounded-1 primary press modal-trigger" data-target="modal-delete" data-id="{{ annonce.id }}" data-title="{{ annonce.title }}">Supprimer</a>
+							</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
 	</div>
 
 <div class="modal shadow-1 white rounded-3" id="modal-delete" data-ax="modal">

@@ -12,14 +12,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
  * @Route("/admin/offers", name="admin_offers_")
  * @package App\Controller\Admin
  */
-class AnnoncesController extends AbstractController
+class OffersController extends AbstractController
 {
 	/**
 	 * @Route("/", name="home")
 	 */
 	public function index(AnnoncesRepository $annoncesRepository): Response
 	{
-		return $this->render('admin/annonces/index.html.twig', [
+		return $this->render('admin/offers/index.html.twig', [
 			'annonces' => $annoncesRepository->findAll()
 		]);
 	}

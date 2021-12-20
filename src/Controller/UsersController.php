@@ -2,8 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\Annonces;
-use App\Form\AnnoncesType;
 use App\Form\EditProfileType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,33 +21,6 @@ class UsersController extends AbstractController
     public function index(): Response
     {
         return $this->render('users/index.html.twig');
-    }
-
-    /**
-     * @Route("/offers/create", name="users_offers_create")
-     */
-    public function ajoutAnnonce(Request $request): Response
-    {
-        $annonce = new Annonces;
-
-        $form = $this->createForm(AnnoncesType::class, $annonce);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $annonce->setActive(false);
-            $annonce->setUsers($this->getUser());
-
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($annonce);
-            $em->flush();
-
-            return $this->redirectToRoute('users');
-        }
-
-        return $this->render('users/annonces/ajout.html.twig', [
-            'form' => $form->createView()
-        ]);
     }
 
     /**

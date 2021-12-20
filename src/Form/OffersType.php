@@ -2,27 +2,33 @@
 
 namespace App\Form;
 
+use App\Entity\Annonces;
 use App\Entity\Categories;
 use Symfony\Component\Form\AbstractType;
+use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
-class CategoriesType extends AbstractType
+class OffersType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('name', TextType::class,[
-                'label' => 'Nom :',
+            ->add('title', TextType::class,[
+                'label' => 'Titre :',
                 'attr' => [
                     'class' => 'form-control rounded-1 mb-5'
                 ]
             ])
-            ->add('parent', EntityType::class, [
-                'label' => 'Parent :',
+            ->add('content', CKEditorType::class,[
+                'label' => 'Contenu :',
+            ])
+            ->add('categories', EntityType::class, [
+                'label' => 'Catégorie :',
                 'label_attr' => [
                     'class' => 'mt-5'
                 ],
@@ -31,9 +37,18 @@ class CategoriesType extends AbstractType
                     'class' => 'form-control mb-5'
                 ]
             ])
-            ->add('Valider', SubmitType::class, [
+            ->add('images', FileType::class, [
+                'label' => false,
+                'multiple' => true,
+                'mapped' => false,
+                'required' => false,
                 'attr' => [
-                    'class' => 'mt-3 btn small rounded-2 success press'
+                    'class' => 'mb-5'
+                ]
+            ])
+            ->add('Sauvegarder', SubmitType::class, [
+                'attr' => [
+                    'class' => 'btn rounded-2 success press'
                 ]
             ])
         ;
@@ -42,7 +57,7 @@ class CategoriesType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Categories::class,
+            'data_class' => Annonces::class,
         ]);
     }
 }
