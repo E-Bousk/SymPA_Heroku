@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Images;
 use App\Entity\Annonces;
+use App\Form\AnnonceContactType;
 use App\Form\OffersType;
 use App\Repository\AnnoncesRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -12,8 +13,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Mailer\MailerInterface;
 
 /**
  * @IsGranted("ROLE_USER")
@@ -82,9 +85,9 @@ class OffersController extends AbstractController
     }
 
     /**
-     * @Route("/details/{slug}", name="details", methods={"GET"})
+     * @Route("/details/{slug}", name="details")
      */
-    public function details($slug, AnnoncesRepository $annoncesRepository): Response
+    public function details($slug, AnnoncesRepository $annoncesRepository, Request $request, MailerInterface $mailer): Response
     {
         $offer = $annoncesRepository->findOneBy(['slug' => $slug]);
 
@@ -92,7 +95,34 @@ class OffersController extends AbstractController
             throw new NotFoundHttpException(sprintf('l\'annonce « %s » n\'a pas été trouvée', $slug));
         }
 
-        return $this->render('offers/details.html.twig', compact('offer'));
+        $form = $this->createForm(AnnonceContactType::class);
+
+        $contact = $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $email = (new TemplatedEmail())
+                ->from($contact->get('email')->getData())
+                ->to($offer->getUsers()->getEmail())
+                ->subject(sprintf('Contact au sujet de votre annonce « %s ».', $offer->getTitle()))
+                ->htmlTemplate('emails/contact_offers.html.twig')
+                ->context([
+                    'offer' => $offer,
+                    // NOTE : ‼ « email » est un nom réservé ‼
+                    'mail' => $contact->get('email')->getData(),
+                    'message' => $contact->get('message')->getData()
+                ])
+            ;
+
+            $mailer->send($email);
+
+            $this->addFlash('message', 'Votre email a bien été envoyé');
+            return $this->redirectToRoute('offers_details', ['slug' => $offer->getSlug()]);
+        }
+
+        return $this->render('offers/details.html.twig', [
+            'offer' => $offer,
+            'form' => $form->createView()
+        ]);
     }
 
     /**

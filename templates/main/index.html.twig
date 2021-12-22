@@ -8,7 +8,7 @@
     <div class="container">
 
         {% for message in app.flashes('success') %}
-            <div class="alert alert-success" role="alert">{{ message }}</div>
+            <div class="p-3 my-2 rounded-1 green light-4 txt-green txt-dark-4">{{ message }}</div>
         {% endfor %}
 
         {% for offer in offers %}
@@ -45,7 +45,7 @@
     </div>
 
     {# MODAL START #}
-    <div class="modal shadow-1 rounded-3 white" id="modal-login" data-ax="modal">
+    <div class="modal shadow-1 rounded-3 white falling" id="modal-login" data-ax="modal">
         <div class="modal-header">
             <b>Favoris</b>
         </div>

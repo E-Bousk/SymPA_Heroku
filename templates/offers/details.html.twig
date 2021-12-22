@@ -1,8 +1,19 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Détail de l'annonce « {{offer.title}} »{% endblock %}
+{% block title %}Détail de l'annonce « {{offer.title}} » {% endblock %}
+
+{% block javascripts %}
+	<script>
+		window.onload = () => {
+			document.querySelector("#annonce_contact_title").value = "{{ offer.title | raw }}";
+		}
+	</script>
+{% endblock %}
 
 {% block body %}
+    {% for message in app.flashes('message') %}
+        <div class="p-3 my-2 rounded-1 red light-4 txt-red txt-dark-4">{{ message }}</div>
+    {% endfor %}
 	<h1 class="ml-5 mb-5 h2">Détail de l'annonce « {{offer.title}} »</h1>
 	<div class="container">
 		<div class="mt-5 caroulix" id="carousel" data-ax="caroulix" data-ax-caroulix-autoplay-enabled="true" data-caroulix-indicators-enabled="true">
@@ -30,8 +41,34 @@
 					</p>
 					{# <p>{{ offer.content | striptags | u.truncate(50, '...', false) }}</p> #}
 					<p>{{ offer.content | raw }}</p>
+					<p>
+						<button class="mt-3 btn shadow-1 rounded-1 small primary modal-trigger" data-target="modal-contact">Contacter l'annonceur</button>
+					</p>
 				</div>
 			</div>
 		</div>
 	</div>
+	<div class="modal shadow-1 white falling" id="modal-contact" data-ax="modal">
+		<div class="modal-header">Contacter l'annonceur</div>
+		<div class="divider"></div>
+		{{ form_start(form) }}
+			<div class="modal-content">
+				{{ form_widget(form.title) }}
+				<div class="mb-1">
+					{{ form_label(form.email) }}
+				</div>
+				{{ form_widget(form.email) }}
+				<div class="mb-1">
+					{{ form_label(form.message) }}
+				</div>
+				{{ form_widget(form.message) }}
+			</div>
+			<div class="divider"></div>
+			<div class="modal-footer">
+				<button data-target="modal-contact" class="btn shadow-1 rounded-1 small primary">Envoyer</button>
+				<button data-target="modal-contact" class="btn shadow-1 rounded-1 small secondary modal-trigger">Fermer</button>
+			</div>
+		{{ form_end(form) }}
+	</div>
 {% endblock %}
+

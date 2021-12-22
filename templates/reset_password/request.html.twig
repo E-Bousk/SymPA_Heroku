@@ -5,7 +5,7 @@
 {% block body %}
 
     {% for flashError in app.flashes('reset_password_error') %}
-        <div class="alert alert-danger" role="alert">{{ flashError }}</div>
+        <div class="p-3 my-2 rounded-1 red light-4 txt-red txt-dark-4">{{ flashError }}</div>
     {% endfor %}
 
     <h1 class="ml-5 mb-5">Réinitialisez votre mot de passe</h1>
@@ -14,7 +14,7 @@
             {{ form_start(requestForm) }}
                 {{ form_row(requestForm.email) }}
                 <div class="mt-1">
-                    <small>Entrez votre adresse e-mail afin de recevoir un lien de réinitialisation.</small>
+                    <small>Entrez votre adresse email afin de recevoir un lien de réinitialisation.</small>
                 </div>
                 <button class="my-3 btn shadow-1 rounded-1 small primary">Envoyer</button>
             {{ form_end(requestForm) }}

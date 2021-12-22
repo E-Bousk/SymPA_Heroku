@@ -1,6 +1,9 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Gérer les annonces
+{% block title %}Gérer les annonces{% endblock %}
+
+{% block javascripts %}
+	<script src="{{ asset('assets/js/toogleActiveAndDeleteModal.js') }}"></script>
 {% endblock %}
 
 {% block body %}
@@ -41,7 +44,7 @@
 	</div>
 
 	{# MODAL START #}
-	<div class="modal shadow-1 rounded-3 white" id="modal-delete" data-ax="modal">
+	<div class="modal shadow-1 rounded-3 white falling" id="modal-delete" data-ax="modal">
 		<div class="modal-header">
 			<b>Supprimer une annonce</b>
 		</div>
@@ -55,8 +58,4 @@
 	</div>
 	{# MODAL END #}
 
-{% endblock %}
-
-{% block javascripts %}
-	<script src="{{ asset('assets/js/toogleActiveAndDeleteModal.js') }}"></script>
 {% endblock %}

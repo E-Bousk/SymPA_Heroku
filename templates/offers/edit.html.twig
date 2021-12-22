@@ -2,6 +2,11 @@
 
 {% block title %}Modifier l'annonce « {{ annonce.title }} »{% endblock %}
 
+
+{% block javascripts %}
+    <script src="{{ asset('assets/js/deleteImage.js') }}"></script>
+{% endblock %}
+
 {% block body %}
     <h1 class="ml-5 mb-5 h2">Modifier l'annonce « {{ annonce.title }} »</h1>
     <div class="container">
@@ -11,8 +16,4 @@
 
         {{ include('offers/_delete_form.html.twig') }}
     </div>
-{% endblock %}
-
-{% block javascripts %}
-    <script src="{{ asset('assets/js/deleteImage.js') }}"></script>
 {% endblock %}
