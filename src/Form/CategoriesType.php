@@ -18,22 +18,22 @@ class CategoriesType extends AbstractType
             ->add('name', TextType::class,[
                 'label' => 'Nom :',
                 'attr' => [
-                    'class' => 'form-control rounded-1 mb-5'
+                    'class' => 'form-control rounded-1'
                 ]
             ])
             ->add('parent', EntityType::class, [
                 'label' => 'Parent :',
                 'label_attr' => [
-                    'class' => 'mt-5'
+                    'class' => 'mt-3'
                 ],
                 'class' => Categories::class,
                 'attr' => [
-                    'class' => 'form-control mb-5'
+                    'class' => 'form-control rounded-1'
                 ]
             ])
             ->add('Valider', SubmitType::class, [
                 'attr' => [
-                    'class' => 'mt-3 btn small rounded-2 success press'
+                    'class' => 'mt-3 btn shadow-1 rounded-1 small success'
                 ]
             ])
         ;

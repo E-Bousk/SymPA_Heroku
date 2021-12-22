@@ -2,24 +2,27 @@
 
 namespace App\Controller;
 
-use App\Entity\Annonces;
 use App\Entity\Images;
+use App\Entity\Annonces;
 use App\Form\OffersType;
 use App\Repository\AnnoncesRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
- * @Route("/offers")
+ * @IsGranted("ROLE_USER")
+ * @Route("/offers", name="offers_")
  */
 class OffersController extends AbstractController
 {
     /**
-     * @Route("/", name="offers_index", methods={"GET"})
+     * @Route("/", name="index", methods={"GET"})
      */
     public function index(AnnoncesRepository $annoncesRepository): Response
     {
@@ -28,8 +31,20 @@ class OffersController extends AbstractController
         ]);
     }
 
+
     /**
-     * @Route("/new", name="offers_new", methods={"GET", "POST"})
+     * @Route("/{id}", name="show", methods={"GET"}, priority=-1)
+     */
+    public function show(Annonces $annonce): Response
+    {
+        return $this->render('offers/show.html.twig', [
+            'annonce' => $annonce,
+        ]);
+    }
+
+
+    /**
+     * @Route("/new", name="new", methods={"GET", "POST"})
      */
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -57,7 +72,7 @@ class OffersController extends AbstractController
             $entityManager->persist($annonce);
             $entityManager->flush();
 
-            return $this->redirectToRoute('offers_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('users', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('offers/new.html.twig', [
@@ -67,17 +82,21 @@ class OffersController extends AbstractController
     }
 
     /**
-     * @Route("/{id}", name="offers_show", methods={"GET"})
+     * @Route("/details/{slug}", name="details", methods={"GET"})
      */
-    public function show(Annonces $annonce): Response
+    public function details($slug, AnnoncesRepository $annoncesRepository): Response
     {
-        return $this->render('offers/show.html.twig', [
-            'annonce' => $annonce,
-        ]);
+        $offer = $annoncesRepository->findOneBy(['slug' => $slug]);
+
+        if (!$offer) {
+            throw new NotFoundHttpException(sprintf('l\'annonce « %s » n\'a pas été trouvée', $slug));
+        }
+
+        return $this->render('offers/details.html.twig', compact('offer'));
     }
 
     /**
-     * @Route("/{id}/edit", name="offers_edit", methods={"GET", "POST"})
+     * @Route("/edit/{id}", name="edit", methods={"GET", "POST"})
      */
     public function edit(Request $request, Annonces $annonce, EntityManagerInterface $entityManager): Response
     {
@@ -94,7 +113,7 @@ class OffersController extends AbstractController
 
             $entityManager->flush();
 
-            return $this->redirectToRoute('offers_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('users', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('offers/edit.html.twig', [
@@ -104,7 +123,7 @@ class OffersController extends AbstractController
     }
 
     /**
-     * @Route("/{id}", name="offers_delete", methods={"POST"})
+     * @Route("/{id}", name="delete", methods={"POST"})
      */
     public function delete(Request $request, Annonces $annonce, EntityManagerInterface $entityManager): Response
     {
@@ -117,7 +136,42 @@ class OffersController extends AbstractController
     }
 
     /**
-     * @Route("/delete/image/{id}", name="offers_delete_image", methods={"DELETE"})
+     * @Route("/bookmark/add/{id}", name="add_bookmark")
+     */
+    public function addBookmark(Annonces $annonce): Response
+    {
+        if (!$annonce) {
+            throw new NotFoundHttpException('Aucune annonce trouvée');
+        }
+
+        $annonce->addFavori($this->getUser());
+
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($annonce);
+        $em->flush();
+
+        return $this->redirectToRoute('app_home');
+    }
+
+    /**
+     * @Route("/bookmark/remove/{id}", name="remove_bookmark")
+     */
+    public function removeBookmark(Annonces $annonce): Response
+    {
+        if (!$annonce) {
+            throw new NotFoundHttpException('Aucune annonce trouvée');
+        }
+
+        $annonce->removeFavori($this->getUser());
+
+        $em = $this->getDoctrine()->getManager();
+        $em->flush();
+
+        return $this->redirectToRoute('app_home');
+    }
+
+    /**
+     * @Route("/delete/image/{id}", name="delete_image", methods={"DELETE"})
      */
     public function deleteImage(Images $image, Request $request)
     {
@@ -125,8 +179,8 @@ class OffersController extends AbstractController
 
         // Vérifie que le CSRF token soit valide
         if($this->isCsrfTokenValid('delete'.$image->getId(), $data['_token'])) {
-            // Supprime le fichier du HDD
-            unlink($this->getParameter('images_directory').'/'.$image->getName());
+            // Supprime le fichier du répertoire 'upload/images/offers'
+            unlink($this->getParameter('images_directory').'/offers/'.$image->getName());
 
             // Supprime l'entrée de la BDD
             $em = $this->getDoctrine()->getManager();
@@ -144,7 +198,7 @@ class OffersController extends AbstractController
     /**
      * Lors de l'ajout d'image pour une annonce :
      * - Génère un nom unique aléatoire
-     * - Déplace le fichier dans le répèrtoire 'upload/images/annonce'
+     * - Déplace le fichier dans le répèrtoire 'upload/images/offers'
      * - Enregistre le nom dans la BDD (entité 'Images')
      * 
      * @param mixed $image 
@@ -155,9 +209,9 @@ class OffersController extends AbstractController
         // Génère un nouveau nom (unique) de fichier
         $fichier = md5(uniqid()) . '.' . $image->guessExtension();
 
-        // Copie ce fichier dans le dossier 'upload/images'
+        // Copie ce fichier dans le dossier 'upload/images/offers'
         $image->move(
-            $this->getParameter('images_directory'),
+            $this->getParameter('images_directory').'/offers',
             $fichier
         );
 

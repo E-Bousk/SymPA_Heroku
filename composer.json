@@ -13,6 +13,7 @@
         "doctrine/orm": "^2.10",
         "friendsofsymfony/ckeditor-bundle": "2.2",
         "helios-ag/fm-elfinder-bundle": "^11.0",
+        "liip/imagine-bundle": "^2.7",
         "phpdocumentor/reflection-docblock": "^5.3",
         "sensio/framework-extra-bundle": "^5.1",
         "symfony/asset": "5.1.*",
@@ -43,6 +44,7 @@
         "symfonycasts/reset-password-bundle": "^1.11",
         "symfonycasts/verify-email-bundle": "^1.7",
         "twig/extra-bundle": "^2.12|^3.0",
+        "twig/string-extra": "^3.3",
         "twig/twig": "^2.12|^3.0"
     },
     "require-dev": {

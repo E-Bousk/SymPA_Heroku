@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détail de l'annonce « {{offer.title}} »{% endblock %}
+
+{% block body %}
+	<h1 class="ml-5 mb-5 h2">Détail de l'annonce « {{offer.title}} »</h1>
+	<div class="container">
+		<div class="mt-5 caroulix" id="carousel" data-ax="caroulix" data-ax-caroulix-autoplay-enabled="true" data-caroulix-indicators-enabled="true">
+			<div class="caroulix-arrow caroulix-prev">
+				<i class="fas fa-chevron-left"></i>
+			</div>
+			<div class="caroulix-arrow caroulix-next">
+				<i class="fas fa-chevron-right"></i>
+			</div>
+			{% for image in offer.images %}
+				<div class="caroulix-item">
+					<img src="{{ asset('uploads/images/offers/' ~ image.name) | imagine_filter('banniere') }}" alt="{{ offer.title }}">
+				</div>
+			{% endfor %}
+		</div>
+		<div class="mb-3 card shadow-1 fx-row">
+			<div class="primary d-flex vcenter fx-center px-4">
+				<img class="py-4" src="{{ asset('uploads/images/offers/' ~ offer.images[0].name) | imagine_filter('square') }}" alt="{{ offer.title }}">
+			</div>
+			<div class="flex fx-col fx-grow">
+				<div class="card-header">{{offer.title}}</div>
+				<div class="card-content">
+					<p class="mb-3">
+						<b>Catégorie : {{ offer.categories }}</b>
+					</p>
+					{# <p>{{ offer.content | striptags | u.truncate(50, '...', false) }}</p> #}
+					<p>{{ offer.content | raw }}</p>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

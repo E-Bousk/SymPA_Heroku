@@ -21,7 +21,7 @@ class OffersType extends AbstractType
             ->add('title', TextType::class,[
                 'label' => 'Titre :',
                 'attr' => [
-                    'class' => 'form-control rounded-1 mb-5'
+                    'class' => 'mb-3 form-control rounded-1'
                 ]
             ])
             ->add('content', CKEditorType::class,[
@@ -30,11 +30,11 @@ class OffersType extends AbstractType
             ->add('categories', EntityType::class, [
                 'label' => 'Catégorie :',
                 'label_attr' => [
-                    'class' => 'mt-5'
+                    'class' => 'mt-3'
                 ],
                 'class' => Categories::class,
                 'attr' => [
-                    'class' => 'form-control mb-5'
+                    'class' => 'mb-3 form-control rounded-1'
                 ]
             ])
             ->add('images', FileType::class, [
@@ -43,12 +43,12 @@ class OffersType extends AbstractType
                 'mapped' => false,
                 'required' => false,
                 'attr' => [
-                    'class' => 'mb-5'
+                    'class' => 'mb-3'
                 ]
             ])
             ->add('Sauvegarder', SubmitType::class, [
                 'attr' => [
-                    'class' => 'btn rounded-2 success press'
+                    'class' => 'btn shadow-1 rounded-1 small success'
                 ]
             ])
         ;

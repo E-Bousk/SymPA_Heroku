@@ -14,9 +14,23 @@ class EditProfileType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('firstname', TextType::class)
-            ->add('name', TextType::class)
-            ->add('Valider', SubmitType::class)
+            ->add('firstname', TextType::class, [
+                'label' => 'Prénom : ',
+                'attr' => [
+                    'class' => 'mb-3 form-control'
+                ]
+            ])
+            ->add('name', TextType::class, [
+                'label' => 'Nom : ',
+                'attr' => [
+                    'class' => 'mb-3 form-control'
+                ]
+            ])
+            ->add('Valider', SubmitType::class, [
+                'attr' => [
+                    'class' => 'btn shadow-1 rounded-1 small primary'
+                ]
+            ])
         ;
     }
 

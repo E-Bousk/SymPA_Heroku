@@ -1,12 +1,12 @@
 {% extends 'users.html.twig' %}
 
-{% block title %}New Annonces{% endblock %}
+{% block title %}Nouvelle Annonce{% endblock %}
 
 {% block body %}
-    <h1>Create new Annonces</h1>
+    <h1 class="ml-5 mb-5">Créer une nouvelle annonce</h1>
     <div class="container">
         {{ include('offers/_form.html.twig') }}
 
-        <a class="btn primary small rounded-2" href="{{ path('offers_index') }}">Retour à la liste</a>
+        <a class="btn shadow-1 rounded-1 small primary" href="{{ path('offers_index') }}">Retour à la liste</a>
     </div>
 {% endblock %}

@@ -3,39 +3,31 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>
-			{% block title %}Welcome!
-			{% endblock %}
+			{% block title %}Bienvenue !{% endblock %}
 		</title>
-		{# Run `composer require symfony/webpack-encore-bundle`
-		           and uncomment the following Encore helpers to start using Symfony UX #}
 
-		<!-- Axentix CSS minified version -->
 		<link rel="stylesheet" href="{{ asset('assets/css/axentix.min.css') }}">
-		{% block stylesheets %}
-			{#{{ encore_entry_link_tags('app') }}#}
-		{% endblock %}
-		<link
-		rel="stylesheet" href="{{ asset('assets/css/styles.css') }}">
+		<link rel="stylesheet" href="{{ asset('assets/css/all.min.css') }}">
+		<link rel="stylesheet" href="{{ asset('assets/css/styles.css') }}">
+		{% block stylesheets %} {% endblock %}
 
-		<!-- Axentix JS minified version -->
 		<script src="{{ asset('assets/js/axentix.min.js') }}"></script>
-		{% block javascripts %}
-			{#{{ encore_entry_script_tags('app') }}#}
-		{% endblock %}
-		<script src="{{ asset('assets/js/script.js') }}"></script>
+		{% block javascripts %}	{% endblock %}
 	</head>
+
 	<body class="layout with-sidenav">
 		<header>
 			<nav class="navbar shadow-1 primary">
-				<a href="{{ path('app_home') }}" class="navbar-brand">Axentix</a>
+				<a href="{{ path('app_home') }}" class="navbar-brand">Petites Annonces</a>
 				<div class="navbar-menu ml-auto">
-					<a class="navbar-link" href="#">Accueil</a>
-					<a class="navbar-link" href="#">Link 2</a>
+					<a class="navbar-link" href="{{ path('app_home') }}">Accueil</a>
+					<a class="navbar-link" href="{{ path('app_login') }}">Connexion</a>
 					<a class="navbar-link" href="#">Link 3</a>
 					<a class="navbar-link" href="#">Link 4</a>
 				</div>
 			</nav>
 		</header>
+
 		<div id="example-sidenav" data-ax="sidenav" class="sidenav shadow-1 large fixed white">
 			<div class="sidenav-header">
 				<button data-target="example-sidenav" class="sidenav-trigger">
@@ -46,15 +38,16 @@
 			<a href="#" class="sidenav-link active">Mon profil</a>
 			<a href="#" class="sidenav-link">Mes annonces</a>
 		</div>
+
 		<main>
-			<button data-target="example-sidenav" class="btn rounded-1 press amaranth dark-1 sidenav-trigger hide-md-up">
-				Open sidenav
+			<button data-target="example-sidenav" class="mt-3 btn rounded-1 press amaranth dark-1 sidenav-trigger hide-md-up">
+				Ouvrir l'onglet
 			</button>
-			{% block body %}{% endblock %}
+			{% block body %} {% endblock %}
 		</main>
 
 		<footer class="footer primary">
-			Copyright © 2021 - Example
+			Copyright © 2021 - Petites Annonces
 		</footer>
 	</body>
 </html>

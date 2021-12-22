@@ -3,41 +3,41 @@
 {% block title %}Annonces index{% endblock %}
 
 {% block body %}
-    <h1 class="ml-5 mt-5">Liste des annonces</h1>
-
-    <table class="table ml-5 mb-5">
-        <thead>
-            <tr>
-                <th>Id #</th>
-                <th>Titre</th>
-                <th>Slug</th>
-                <th>Contenu</th>
-                <th>Créé le</th>
-                <th>Active</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for annonce in annonces %}
-            <tr>
-                <td>{{ annonce.id }}</td>
-                <td>{{ annonce.title }}</td>
-                <td>{{ annonce.slug }}</td>
-                <td>{{ annonce.content | raw }}</td>
-                <td>{{ annonce.createdAt ? annonce.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ annonce.active ? 'Yes' : 'No' }}</td>
-                <td>
-                    <a href="{{ path('offers_show', {'id': annonce.id}) }}">show</a>
-                    <a href="{{ path('offers_edit', {'id': annonce.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="7">Aucune annonce trouvée</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <a class="btn primary small rounded-2 mb-5 ml-5" href="{{ path('offers_new') }}">Créer une nouvelle annonce</a>
+    <h1 class="ml-5 mb-5">Liste des annonces</h1>
+    <div class="container">
+        <table class="table ml-5 mb-5">
+            <thead>
+                <tr>
+                    <th>Id #</th>
+                    <th>Titre</th>
+                    <th>Slug</th>
+                    <th>Contenu</th>
+                    <th>Créé le</th>
+                    <th>Active</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for annonce in annonces %}
+                <tr>
+                    <td>{{ annonce.id }}</td>
+                    <td>{{ annonce.title }}</td>
+                    <td>{{ annonce.slug }}</td>
+                    <td>{{ annonce.content | raw }}</td>
+                    <td>{{ annonce.createdAt ? annonce.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                    <td>{{ annonce.active ? 'Yes' : 'No' }}</td>
+                    <td>
+                        <a href="{{ path('offers_show', {'id': annonce.id}) }}">show</a>
+                        <a href="{{ path('offers_edit', {'id': annonce.id}) }}">edit</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="7">Aucune annonce trouvée</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <a class="mb-5 ml-5 btn shadow-1 rounded-1 small primary" href="{{ path('offers_new') }}">Créer une nouvelle annonce</a>
+    </div>
 {% endblock %}

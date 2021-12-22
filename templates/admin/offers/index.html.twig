@@ -1,9 +1,10 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Gérer les annonces{% endblock %}
+{% block title %}Gérer les annonces
+{% endblock %}
 
 {% block body %}
-	<h1>Gérer les annonces</h1>
+	<h1 class="ml-5 mb-5">Gérer les annonces</h1>
 	<div class="container">
 		<div class="responsive-table">
 			<table class="table striped">
@@ -29,7 +30,8 @@
 								</label>
 							</td>
 							<td>
-								<a href="#" class="btn rounded-1 primary press modal-trigger" data-target="modal-delete" data-id="{{ annonce.id }}" data-title="{{ annonce.title }}">Supprimer</a>
+								{# <a href="#" class="btn shadow-1 rounded-1 small error modal-trigger" data-target="modal-delete" data-id="{{ annonce.id }}" data-title="{{ annonce.title }}">Supprimer</a> #}
+								<a href="#" class="ml-3 txt-red modal-trigger" data-target="modal-delete" data-id="{{ annonce.id }}" data-title="{{ annonce.title }}"><i class="fas fa-2x fa-trash"></i></a>
 							</td>
 						</tr>
 					{% endfor %}
@@ -38,23 +40,21 @@
 		</div>
 	</div>
 
-<div class="modal shadow-1 white rounded-3" id="modal-delete" data-ax="modal">
-	<div class="modal-header"><b>Supprimer une annonce</b></div>
-
-	<div class="divider"></div>
-
-	<div class="modal-content">
+	{# MODAL START #}
+	<div class="modal shadow-1 rounded-3 white" id="modal-delete" data-ax="modal">
+		<div class="modal-header">
+			<b>Supprimer une annonce</b>
+		</div>
+		<div class="divider"></div>
+		<div class="modal-content"></div>
+		<div class="divider"></div>
+		<div class="modal-footer">
+			<a href="#" class="btn shadow-1 rounded-1 small secondary">Valider</a>
+			<a href="#" data-target="modal-delete" class="btn shadow-1 rounded-1 small primary modal-trigger">Annuler</a>
+		</div>
 	</div>
+	{# MODAL END #}
 
-	<div class="divider"></div>
-
-	<div class="modal-footer">
-		<a href="#" class="btn shadow-1 rounded-1 small secondary">Valider</a>
-		<a href="#" data-target="modal-delete" class="btn shadow-1 rounded-1 small primary modal-trigger">Annuler</a>
-		{# <button data-target="modal-delete" class="ml-auto btn shadow-1 rounded-1 small secondary modal-trigger">Valider</button> #}
-		{# <button data-target="modal-delete" class="btn shadow-1 rounded-1 small primary modal-trigger">Close</button> #}
-	</div>
-</div>
 {% endblock %}
 
 {% block javascripts %}

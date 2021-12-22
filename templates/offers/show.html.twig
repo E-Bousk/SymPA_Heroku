@@ -3,7 +3,7 @@
 {% block title %}Annonces{% endblock %}
 
 {% block body %}
-    <h1 class="ml-5">Annonces</h1>
+    <h1 class="ml-5 mb-5">Annonces</h1>
     <div class="container">
         <table class="table">
             <tbody>
@@ -21,7 +21,7 @@
                 </tr>
                 <tr>
                     <th>Contenu</th>
-                    <td>{{ annonce.content }}</td>
+                    <td>{{ annonce.content | raw }}</td>
                 </tr>
                 <tr>
                     <th>Créé le</th>
@@ -35,8 +35,8 @@
         </table>
 
         <div class="my-3">
-            <a class="btn secondary small rounded-2" href="{{ path('offers_index') }}">back to list</a>
-            <a class="btn primary small rounded-2" href="{{ path('offers_edit', {'id': annonce.id}) }}">edit</a>
+            <a class="btn shadow-1 rounded-1 small secondary" href="{{ path('offers_index') }}">back to list</a>
+            <a class="btn shadow-1 rounded-1 small primary" href="{{ path('offers_edit', {'id': annonce.id}) }}">edit</a>
         </div>
     {{ include('offers/_delete_form.html.twig') }}
     </div>

@@ -1,25 +1,65 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello MainController!{% endblock %}
+{% block title %}Accueil{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    <h1 class="ml-5 mb-5">Bienvenue sur ce site de petites annonces</h1>
+    <div class="container">
 
-    {% for message in app.flashes('success') %}
-        <div class="alert alert-success" role="alert">{{ message }}</div>
-    {% endfor %}
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success" role="alert">{{ message }}</div>
+        {% endfor %}
 
+        {% for offer in offers %}
+            <div class="card shadow-1 fx-row">
+                <div class="px-4 py-4 primary d-flex vcenter fx-center">
+                    <img src="{{ asset('uploads/images/offers/' ~ offer.images[0].name) | imagine_filter('square') }}" alt="{{ offer.title }}">
+                </div>
+                <div class="flex fx-col fx-grow">
+                    <div class="card-header">
+                        <a href="{{ path('offers_details', {slug: offer.slug}) }}">{{offer.title}}</a>
+                        {% if app.user %}
+                            {% set bookmarked = false %}
+                            {% for favoris in offer.favoris %}
+                                {% if favoris == app.user %}
+                                    {% set bookmarked = true %}
+                                {% endif %}
+                            {% endfor %}
+                            {% if bookmarked %}
+                                <a href="{{ path('offers_remove_bookmark', {id: offer.id})}}"><i class="txt-red float-right fas fa-heart"></i></a>
+                            {% else %}
+                                <a href="{{ path('offers_add_bookmark', {id: offer.id})}}"><i class="txt-red float-right far fa-heart"></i></a>
+                            {% endif %}
+                        {% else %}
+                            <a class="modal-trigger" data-target="modal-login"><i class="txt-red float-right far fa-heart"></i></a>
+                        {% endif %}
+                    </div>
+                    <div class="card-content">
+                        <p class="mb-2"><b>Catégorie :  {{ offer.categories }}</b></p>
+                        <p>{{ offer.content | raw }}</p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ 'D:/__DEV/____symfony/symfony5_livecoding/src/Controller/MainController.php'|file_link(0) }}">src/Controller/MainController.php</a></code></li>
-        <li>Your template at <code><a href="{{ 'D:/__DEV/____symfony/symfony5_livecoding/templates/main/index.html.twig'|file_link(0) }}">templates/main/index.html.twig</a></code></li>
-    </ul>
-</div>
+    {# MODAL START #}
+    <div class="modal shadow-1 rounded-3 white" id="modal-login" data-ax="modal">
+        <div class="modal-header">
+            <b>Favoris</b>
+        </div>
+        <div class="divider"></div>
+        <div class="modal-content">
+            Vous devez être connecté pour pouvoir mettre une annonce en favori.
+            <br>Voulez-vous vous connecter ?
+        </div>
+        <div class="divider"></div>
+        <div class="modal-footer">
+            <a href="{{ path('app_login') }}" class="btn shadow-1 rounded-1 small secondary">Connexion</a>
+            <a href="#" data-target="modal-login" class="btn shadow-1 rounded-1 small primary modal-trigger">Annuler</a>
+        </div>
+    </div>
+    {# MODAL END #}
+
 {% endblock %}

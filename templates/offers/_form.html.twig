@@ -2,15 +2,15 @@
     {{ form_start(form) }}
         {{ form_widget(form) }}
 
-        {# Vérifie si la route est "offers_edit" pour afficher les images #}
+        {# Vérifie si la route est « offers_edit » pour afficher les images #}
         {% if app.request.attributes.get('_route') == 'offers_edit' %}
             {% if annonce.images is not empty %}
                 <h2>Images</h2>
                     <div class="grix xs2 md3">
                         {% for image in annonce.images %}
                             <div>
-                                <img src="{{ asset('uploads/images/' ~ image.name) }}" alt="Image" width="250">
-                                <br><a class="btn error small rounded-2" href="{{ path('offers_delete_image', {id: image.id}) }}" data-delete data-token="{{ csrf_token('delete' ~ image.id) }}">Effacer</a>
+                                <img src="{{ asset('uploads/images/offers/' ~ image.name) }}" alt="Image" width="250">
+                                <br><a class="btn shadow-1 rounded-1 small error" href="{{ path('offers_delete_image', {id: image.id}) }}" data-delete data-token="{{ csrf_token('delete' ~ image.id) }}">Effacer</a>
                             </div>
                         {% endfor %}
                     </div>
