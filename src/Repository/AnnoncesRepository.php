@@ -19,6 +19,31 @@ class AnnoncesRepository extends ServiceEntityRepository
         parent::__construct($registry, Annonces::class);
     }
 
+    /**
+     * Recherche les annonces en fonction des mot-clés saisis dans le formulaire
+     * @param mixed $mots 
+     * @return mixed 
+     */
+    public function search($mots = null, $categorie = null)
+    {
+        $query = $this->createQueryBuilder('a');
+        $query->where('a.active = 1');
+
+        if ($mots != null) {
+            $query->andWhere('MATCH_AGAINST(a.title, a.content) AGAINST(:mots boolean)>0')
+                ->setParameter('mots', $mots);
+        }
+
+        if ($categorie != null) {
+            $query->leftJoin('a.categories', 'c')
+                ->andWhere('c.id = :id')
+                ->setParameter('id', $categorie);
+        }
+
+        return $query->getQuery()->getResult();
+    }
+
+
     // /**
     //  * @return Annonces[] Returns an array of Annonces objects
     //  */
