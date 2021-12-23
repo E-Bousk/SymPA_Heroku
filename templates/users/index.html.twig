@@ -19,10 +19,11 @@
         <div class="mt-3 col-xs4">
             <a href="{{ path('users_edit_profile') }}" class="btn shadow-1 rounded-1 small primary">Modifier le profil</a>
             <a href="{{ path('users_edit_password') }}" class="btn shadow-1 rounded-1 small primary">Modifier le mot de passe</a>
+            <a href="{{ path('users_data') }}" class="btn shadow-1 rounded-1 small grey">Voir mes données personnelles</a>
         </div>
 	</div>
     <h1 class="ml-5 mt-5">Annonces de {{ app.user.firstname }} {{ app.user.name }} ({{ app.user.annonces | length }})</h1>
-    <div class="container grix xs4 ">
+    <div class="mb-3 container grix xs4 ">
         {% for annonce in app.user.annonces %}
             <div class="col-xs1">Titre :</div>
             <div class="col-xs3">{{ annonce.title }}</div>

@@ -1,0 +1,45 @@
+{% extends 'users.html.twig' %}
+
+{% block title %}Données personnelles de {{ app.user.firstname }} {{ app.user.name }}{% endblock %}
+
+{% block body %}
+    <h1 class="ml-5 mt-5">Données personnelles de {{ app.user.firstname }} {{ app.user.name }}</h1>
+    <a class="ml-5 my-3 btn shadow-1 rounded-1 small primary" href="{{ path('users_data_download') }}">Télécharger les données</a>
+    <div class="container grix xs4 ">
+        {% for message in app.flashes('message') %}
+            <div class="col-xs4">
+                <div class="p-3 my-2 rounded-1 green light-4 txt-green txt-dark-4">{{ message }}</div>
+            </div>
+        {% endfor %}
+		<div class="col-xs1 font-w700">Nom :</div>
+		<div class="col-xs3">{{ app.user.name }}</div>
+		<div class="col-xs1 font-w700">Prénom :</div>
+		<div class="col-xs3">{{ app.user.firstname }}</div>
+		<div class="col-xs1 font-w700">Email :</div>
+		<div class="col-xs3">{{ app.user.email }}</div>
+        {# <div class="mt-3 col-xs4"> #}
+            {# <a href="{{ path('users_edit_password') }}" class="btn shadow-1 rounded-1 small primary">Modifier le mot de passe</a> #}
+            {# <a href="{{ path('users_data') }}" class="btn shadow-1 rounded-1 small grey">Voir mes données personnelles</a> #}
+        {# </div> #}
+	</div>
+    <h1 class="ml-5 mt-5">Annonces de {{ app.user.firstname }} {{ app.user.name }} ({{ app.user.annonces | length }})</h1>
+    <div class="mb-3 container grix xs1">
+        {% for annonce in app.user.annonces %}
+        <div class="card shadow-1 rounded-2 bd-blue bd-solid bd-3">
+            <div class="card-header">
+                <span class="font-w700">Titre : </span>{{ annonce.title }}
+            </div>
+            <div class="card-content">
+                <span class="font-w700">Contenu : </span>{{ annonce.content | raw }}
+                <div class="mt-3 d-flex">
+                    <span class="mt-3 mr-2 font-w700 vcenter">Image(s) associée(s) : </span>
+                    {% for image in annonce.images %}
+                        <img class="mr-2" src="{{ asset('uploads/images/offers/' ~ image.name) | imagine_filter('thumb') }}" alt="{{annonce.title}}">
+                    {% endfor %}
+                     
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% endblock %}

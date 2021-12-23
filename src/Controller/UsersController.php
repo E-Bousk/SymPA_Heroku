@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Form\EditProfileType;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -73,5 +75,61 @@ class UsersController extends AbstractController
             }
         }
         return $this->render('users/editpassword.html.twig');
+    }
+
+    /**
+     * @Route("/data", name="users_data")
+     */
+    public function userData(): Response
+    {
+        return $this->render('users/data.html.twig');
+    }
+
+    /**
+     * @Route("/data/download", name="users_data_download")
+     */
+    public function userDataDownload(): Response
+    {
+        // Définit les options du PDF
+        $pdfOptions = new Options();
+
+        // Police par défaut
+        $pdfOptions->set('defaultFont', 'Arial');
+
+        // Donne la possibilité de télécharger le PDF
+        $pdfOptions->set('isRemoteEnabled', true);
+
+        // Instancie DOMPDF
+        $dompdf = new Dompdf($pdfOptions);
+
+        // Pour gérer le SSL
+        $context = stream_context_create([
+            'ssl' => [
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+                'allow_self_signed' => true
+            ]
+        ]);
+        $dompdf->setHttpContext($context);
+
+        // Génère le HTML
+        $html = $this->renderView('users/download.html.twig');
+        // Transmet le HTML généré à DOMPDF
+        $dompdf->loadHtml($html);
+        // (Optional) Setup the paper size and orientation
+        $dompdf->setPaper('A4', 'portrait');
+        // Render the HTML as PDF
+        $dompdf->render();
+
+        // Génère un nom de fichier
+        $fileName = sprintf('user-data-%s-%s.pdf', $this->getUser()->getFirstName(), $this->getUser()->getName());
+
+        // Output the generated PDF to Browser
+        $dompdf->stream($fileName, [
+            'Attachment' => true
+        ]);
+
+        // nécessaire car le "stream' n'est pas une réponse en tant que telle
+        return new Response();
     }
 }
