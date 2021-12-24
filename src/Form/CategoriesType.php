@@ -6,6 +6,7 @@ use App\Entity\Categories;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\ColorType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -21,14 +22,22 @@ class CategoriesType extends AbstractType
                     'class' => 'form-control rounded-1'
                 ]
             ])
-            ->add('parent', EntityType::class, [
+            ->add('parent', null, [
                 'label' => 'Parent :',
                 'label_attr' => [
                     'class' => 'mt-3'
                 ],
-                'class' => Categories::class,
                 'attr' => [
                     'class' => 'form-control rounded-1'
+                ]
+            ])
+            ->add('color', ColorType::class, [
+                'label' => 'Couleur :',
+                'label_attr' => [
+                    'class' => 'mt-3'
+                ],
+                'attr' => [
+                    'class' => 'rounded-1'
                 ]
             ])
             ->add('Valider', SubmitType::class, [

@@ -43,6 +43,22 @@ class AnnoncesRepository extends ServiceEntityRepository
         return $query->getQuery()->getResult();
     }
 
+    /**
+     * Retourne le nombre d'annonces par date
+     * @return mixed 
+     */
+    public function countByDate()
+    {
+        $query = $this->getEntityManager()->createQuery(
+            'SELECT 
+            COUNT(a) as count,
+            SUBSTRING(a.created_at, 1, 10) as dateAnnonces
+            FROM App\Entity\Annonces a
+            GROUP BY dateAnnonces'
+        );
+
+        return $query->getResult();
+    }
 
     // /**
     //  * @return Annonces[] Returns an array of Annonces objects
