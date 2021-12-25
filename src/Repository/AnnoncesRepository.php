@@ -21,13 +21,11 @@ class AnnoncesRepository extends ServiceEntityRepository
 
     /**
      * Recherche les annonces en fonction des mot-clés saisis dans le formulaire
-     * @param mixed $mots 
-     * @return mixed 
      */
     public function search($mots = null, $categorie = null)
     {
-        $query = $this->createQueryBuilder('a');
-        $query->where('a.active = 1');
+        $query = $this->createQueryBuilder('a')
+            ->where('a.active = 1');
 
         if ($mots != null) {
             $query->andWhere('MATCH_AGAINST(a.title, a.content) AGAINST(:mots boolean)>0')
@@ -45,7 +43,6 @@ class AnnoncesRepository extends ServiceEntityRepository
 
     /**
      * Retourne le nombre d'annonces par date
-     * @return mixed 
      */
     public function countByDate()
     {
@@ -59,6 +56,56 @@ class AnnoncesRepository extends ServiceEntityRepository
 
         return $query->getResult();
     }
+
+    /**
+     * Recherche les annonces dans une fouchette de date
+     */
+    public function fourchetteDate($from, $to, $categorie = null)
+    {
+        $query = $this->createQueryBuilder('a')
+            ->where('a.created_at > :from')
+            ->andWhere('a.created_at < :to')
+            ->setParameter('from', $from)
+            ->setParameter('to', $to)
+        ;
+
+        if ($categorie != null) {
+            $query->leftJoin('a.categories', 'c')
+                ->andWhere('c.id = :categorie')
+                ->setParameter('categorie', $categorie)
+            ;
+        }
+
+        return $query->getQuery()->getResult();
+    }
+
+    /**
+     * Retourne toutes les annonces par page
+     */
+    public function getPaginatedOffers($page, $limit = 5)
+    {
+        $query = $this->createQueryBuilder('a')
+            ->where('a.active = 1')
+            ->orderBy('a.created_at')
+            ->setFirstResult(($page * $limit) - $limit)
+            ->setMaxResults($limit)
+        ;
+        return $query->getQuery()->getResult();
+    }
+
+    /**
+     * Retourne le nombre total d'annonces
+     */
+    public function getTotalOffers()
+    {
+        $query = $this->createQueryBuilder('a')
+            ->select('count(a)')
+            ->where('a.active = 1')
+        ;
+        // return $query->getQuery()->getResult(); // retourne un tableau
+        return $query->getQuery()->getSingleScalarResult(); // retourne seulement le nombre
+    }
+
 
     // /**
     //  * @return Annonces[] Returns an array of Annonces objects

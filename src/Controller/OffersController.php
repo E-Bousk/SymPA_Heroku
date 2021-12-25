@@ -25,13 +25,23 @@ use Symfony\Component\Mailer\MailerInterface;
 class OffersController extends AbstractController
 {
     /**
-     * @Route("/", name="index", methods={"GET"})
+     * @Route("/", name="list", methods={"GET"})
      */
-    public function index(AnnoncesRepository $annoncesRepository): Response
+    public function index(AnnoncesRepository $annoncesRepository, Request $request): Response
     {
-        return $this->render('offers/index.html.twig', [
-            'annonces' => $annoncesRepository->findAll(),
-        ]);
+        // Définit le nombre d'élément par page
+        $limit = 2;
+        
+        // Récupère sur quelle page se trouve l'utilisateur
+        $page = (int)$request->query->get("page", 1);
+
+        // Récupère les annonces de la page
+        $offers = $annoncesRepository->getPaginatedOffers($page, $limit);
+
+        // Récupère le nombre total d'annonce
+        $total = $annoncesRepository->getTotalOffers();
+
+        return $this->render('offers/index.html.twig', compact('limit', 'page', 'offers', 'total'));
     }
 
 
@@ -162,7 +172,7 @@ class OffersController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('offers_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('offers_list', [], Response::HTTP_SEE_OTHER);
     }
 
     /**

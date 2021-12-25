@@ -18,17 +18,17 @@
                 </tr>
             </thead>
             <tbody>
-            {% for annonce in annonces %}
+            {% for offer in offers %}
                 <tr>
-                    <td>{{ annonce.id }}</td>
-                    <td>{{ annonce.title }}</td>
-                    <td>{{ annonce.slug }}</td>
-                    <td>{{ annonce.content | raw }}</td>
-                    <td>{{ annonce.createdAt ? annonce.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-                    <td>{{ annonce.active ? 'Yes' : 'No' }}</td>
+                    <td>{{ offer.id }}</td>
+                    <td>{{ offer.title }}</td>
+                    <td>{{ offer.slug }}</td>
+                    <td>{{ offer.content | raw }}</td>
+                    <td>{{ offer.createdAt ? offer.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                    <td>{{ offer.active ? 'Yes' : 'No' }}</td>
                     <td>
-                        <a href="{{ path('offers_show', {'id': annonce.id}) }}">show</a>
-                        <a href="{{ path('offers_edit', {'id': annonce.id}) }}">edit</a>
+                        <a href="{{ path('offers_show', {'id': offer.id}) }}">show</a>
+                        <a href="{{ path('offers_edit', {'id': offer.id}) }}">edit</a>
                     </td>
                 </tr>
             {% else %}
@@ -40,4 +40,33 @@
         </table>
         <a class="mb-5 ml-5 btn shadow-1 rounded-1 small primary" href="{{ path('offers_new') }}">Créer une nouvelle annonce</a>
     </div>
+
+    {% set lastPage = (total / limit) | round(0, 'ceil') %}
+    <ul class="pagination">
+        <li class="{{ (page == 1) ? 'disabled' : '' }}">
+            <a href="?page=1">
+                <i class="fas fa-step-backward"></i>
+            </a>
+        </li>
+        <li class="{{ (page == 1) ? 'disabled' : '' }}">
+            <a href="{{ (page > 1) ? '?page=' ~  (page - 1) : '' }}">
+                <i class="fas fa-angle-left"></i>
+            </a>
+        </li>
+        {% for number in 1..lastPage %}
+            <li class="{{ (page == number) ? 'active' : ''}}">
+                <a href="?page={{ number }}">{{ number }}</a>
+            </li>
+        {% endfor %}
+        <li class="{{ (page == lastPage) ? 'disabled' : '' }}">
+            <a href="{{ (page < lastPage) ? '?page=' ~  (page + 1) : '' }}">
+                <i class="fas fa-angle-right"></i>
+            </a>
+        </li>
+        <li class="{{ (page == lastPage) ? 'disabled' : '' }}">
+            <a href="?page={{ lastPage }}">
+                <i class="fas fa-step-forward"></i>
+            </a>
+        </li>
+    </ul>
 {% endblock %}

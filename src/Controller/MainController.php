@@ -19,6 +19,7 @@ class MainController extends AbstractController
      */
     public function index(AnnoncesRepository $annoncesRepository, Request $request): Response
     {
+        $offers = $annoncesRepository->fourchetteDate('2021-10-10', '2021-12-08', 3);
         $offers = $annoncesRepository->findBy(['active' =>true], ['created_at' => 'desc'], 10);
 
         $form = $this->createForm(SearchOfferType::class);
