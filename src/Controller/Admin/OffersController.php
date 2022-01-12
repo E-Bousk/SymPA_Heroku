@@ -42,6 +42,17 @@ class OffersController extends AbstractController
 	 */
 	public function delete(Annonces $annonce): Response
 	{
+
+		$images = $annonce->getImages();
+		if ($images) {
+			foreach ($images as $image) {
+				$nomImage = sprintf("%s/offers/%s", $this->getParameter('images_directory'), $image->getName());
+				if (file_exists($nomImage)) {
+					unlink($nomImage);
+				}
+			}
+		}
+
 		$em = $this->getDoctrine()->getManager();
 		$em->remove($annonce);
 		$em->flush();
