@@ -5,12 +5,14 @@
 {% block body %}
     <h1 class="ml-5 mb-5">Liste des annonces</h1>
     <div class="container">
+        {{ form(form) }}
         <table class="table ml-5 mb-5">
             <thead>
                 <tr>
                     <th>Id #</th>
                     <th>Titre</th>
                     <th>Slug</th>
+                    <th>Catégorie</th>
                     <th>Contenu</th>
                     <th>Créé le</th>
                     <th>Active</th>
@@ -23,6 +25,7 @@
                     <td>{{ offer.id }}</td>
                     <td>{{ offer.title }}</td>
                     <td>{{ offer.slug }}</td>
+                    <td>{{ offer.categories }}</td>
                     <td>{{ offer.content | raw }}</td>
                     <td>{{ offer.createdAt ? offer.createdAt|date('Y-m-d H:i:s') : '' }}</td>
                     <td>{{ offer.active ? 'Yes' : 'No' }}</td>
@@ -39,34 +42,6 @@
             </tbody>
         </table>
         <a class="mb-5 ml-5 btn shadow-1 rounded-1 small primary" href="{{ path('offers_new') }}">Créer une nouvelle annonce</a>
-    </div>
+    </div> 
 
-    {% set lastPage = (total / limit) | round(0, 'ceil') %}
-    <ul class="pagination">
-        <li class="{{ (page == 1) ? 'disabled' : '' }}">
-            <a href="?page=1">
-                <i class="fas fa-step-backward"></i>
-            </a>
-        </li>
-        <li class="{{ (page == 1) ? 'disabled' : '' }}">
-            <a href="{{ (page > 1) ? '?page=' ~  (page - 1) : '' }}">
-                <i class="fas fa-angle-left"></i>
-            </a>
-        </li>
-        {% for number in 1..lastPage %}
-            <li class="{{ (page == number) ? 'active' : ''}}">
-                <a href="?page={{ number }}">{{ number }}</a>
-            </li>
-        {% endfor %}
-        <li class="{{ (page == lastPage) ? 'disabled' : '' }}">
-            <a href="{{ (page < lastPage) ? '?page=' ~  (page + 1) : '' }}">
-                <i class="fas fa-angle-right"></i>
-            </a>
-        </li>
-        <li class="{{ (page == lastPage) ? 'disabled' : '' }}">
-            <a href="?page={{ lastPage }}">
-                <i class="fas fa-step-forward"></i>
-            </a>
-        </li>
-    </ul>
 {% endblock %}

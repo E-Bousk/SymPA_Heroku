@@ -82,11 +82,19 @@ class AnnoncesRepository extends ServiceEntityRepository
     /**
      * Retourne toutes les annonces par page
      */
-    public function getPaginatedOffers($page, $limit = 5)
+    public function getPaginatedOffers($page, $limit = 5, $filters = null)
     {
         $query = $this->createQueryBuilder('a')
-            ->where('a.active = 1')
-            ->orderBy('a.created_at')
+            ->where('a.active = 1');
+
+        // filtre les données
+        if ($filters != null){
+            $query->andWhere('a.categories IN(:cats)')
+                ->setParameter(':cats', array_values($filters))
+            ;
+        }
+
+        $query->orderBy('a.created_at')
             ->setFirstResult(($page * $limit) - $limit)
             ->setMaxResults($limit)
         ;
@@ -96,12 +104,19 @@ class AnnoncesRepository extends ServiceEntityRepository
     /**
      * Retourne le nombre total d'annonces
      */
-    public function getTotalOffers()
+    public function getTotalOffers($filters = null)
     {
         $query = $this->createQueryBuilder('a')
             ->select('count(a)')
             ->where('a.active = 1')
         ;
+        // filtre les données
+        if ($filters != null){
+            $query->andWhere('a.categories IN(:cats)')
+                ->setParameter(':cats', array_values($filters))
+            ;
+        }
+
         // return $query->getQuery()->getResult(); // retourne un tableau
         return $query->getQuery()->getSingleScalarResult(); // retourne seulement le nombre
     }

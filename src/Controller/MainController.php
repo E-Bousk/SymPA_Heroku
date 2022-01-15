@@ -5,8 +5,10 @@ namespace App\Controller;
 use App\Form\ContactType;
 use App\Form\SearchOfferType;
 use App\Repository\AnnoncesRepository;
+use App\Repository\CategoriesRepository;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
@@ -17,28 +19,41 @@ class MainController extends AbstractController
     /**
      * @Route("/", name="app_home")
      */
-    public function index(AnnoncesRepository $annoncesRepository, Request $request): Response
+    public function index(
+        AnnoncesRepository $annoncesRepository,
+        CategoriesRepository $categoriesRepository,
+        Request $request): Response
     {
-        $offers = $annoncesRepository->fourchetteDate('2021-10-10', '2021-12-08', 3);
-        $offers = $annoncesRepository->findBy(['active' =>true], ['created_at' => 'desc'], 10);
 
-        $form = $this->createForm(SearchOfferType::class);
 
-        $search = $form->handleRequest($request);
+        /** PAGINATION */
+        // Définit le nombre d'élément par page
+        $limit = 5;
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $offers = $annoncesRepository->search(
-                $search->get('mots')->getData(),
-                $search->get('categorie')->getData()
-            );
+        // Récupère sur quelle page se trouve l'utilisateur
+        $page = (int)$request->query->get("page", 1);
+
+        // Récupère les filtres (pour filtrer par catégorie)
+        $filter = $request->get('categories');
+  
+        // Récupère les annonces de la page en fonction du filtre
+        $offers = $annoncesRepository->getPaginatedOffers($page, $limit, $filter);
+
+        // Récupère le nombre total d'annonce
+        $total = $annoncesRepository->getTotalOffers($filter);
+
+        /** FILTRE par catégorie */
+        // Vérifie si une requête Ajax est faite
+        if ($request->get('ajax')) {
+            return new JsonResponse([
+                'content' => $this->renderView('main/_content.html.twig', compact('limit', 'page', 'offers', 'total'))
+            ]);
         }
 
+        // Récupère toutes les catégories
+        $categories = $categoriesRepository->findAll();
 
-
-        return $this->render('main/index.html.twig', [
-            'offers' => $offers,
-            'form' => $form->createView()
-        ]);
+        return $this->render('main/index.html.twig', compact('limit', 'page', 'offers', 'total', 'categories'));
     }
 
     /**

@@ -4,19 +4,20 @@ namespace App\Controller;
 
 use App\Entity\Images;
 use App\Entity\Annonces;
-use App\Form\AnnonceContactType;
 use App\Form\OffersType;
+use App\Form\SearchOfferType;
+use App\Form\AnnonceContactType;
 use App\Repository\AnnoncesRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Mailer\MailerInterface;
 
 /**
  * @IsGranted("ROLE_USER")
@@ -25,25 +26,29 @@ use Symfony\Component\Mailer\MailerInterface;
 class OffersController extends AbstractController
 {
     /**
-     * @Route("/", name="list", methods={"GET"})
+     * @Route("/", name="list")
      */
     public function index(AnnoncesRepository $annoncesRepository, Request $request): Response
     {
-        // Définit le nombre d'élément par page
-        $limit = 2;
+        // $offers = $annoncesRepository->fourchetteDate('2021-10-10', '2022-01-08', 3);
+        $offers = $annoncesRepository->findBy(['active' =>true], ['created_at' => 'desc']);
+
+        /** RECHERCHE par mot-clé ou catégorie */
+        $form = $this->createForm(SearchOfferType::class);
+        $search = $form->handleRequest($request);
         
-        // Récupère sur quelle page se trouve l'utilisateur
-        $page = (int)$request->query->get("page", 1);
-
-        // Récupère les annonces de la page
-        $offers = $annoncesRepository->getPaginatedOffers($page, $limit);
-
-        // Récupère le nombre total d'annonce
-        $total = $annoncesRepository->getTotalOffers();
-
-        return $this->render('offers/index.html.twig', compact('limit', 'page', 'offers', 'total'));
+        if ($form->isSubmitted() && $form->isValid()) {
+            $offers = $annoncesRepository->search(
+                $search->get('mots')->getData(),
+                $search->get('categorie')->getData()
+            );
+        }
+        
+        return $this->render('offers/index.html.twig', [
+            'offers' => $offers,
+            'form' => $form->createView()
+        ]);
     }
-
 
     /**
      * @Route("/{id}", name="show", methods={"GET"}, priority=-1)

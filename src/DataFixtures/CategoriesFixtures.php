@@ -20,7 +20,7 @@ class CategoriesFixtures extends Fixture
                 'color' => '#80c0ff'
             ],
             3 => [
-                'name' =>'Outils',
+                'name' =>'Outil',
                 'color' => '#c0ff80'
             ],
             4 => [

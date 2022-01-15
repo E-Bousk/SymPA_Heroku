@@ -1,0 +1,54 @@
+{% for offer in offers %}
+    <div class="card shadow-1 fx-row">
+        <div class="px-4 py-4 primary d-flex vcenter fx-center">
+            <img src="{{ asset('uploads/images/offers/' ~ offer.images[0].name) | imagine_filter('square') }}" alt="{{ offer.title }}">
+        </div>
+        <div class="flex fx-col fx-grow">
+            <div class="card-header">
+                <a href="{{ path('offers_details', {slug: offer.slug}) }}">{{offer.title}}</a>
+                {% if app.user %}
+                    {% set bookmarked = false %}
+                    {% for favoris in offer.favoris %}
+                        {% if favoris == app.user %}
+                            {% set bookmarked = true %}
+                        {% endif %}
+                    {% endfor %}
+                    {% if bookmarked %}
+                        <a href="{{ path('offers_remove_bookmark', {id: offer.id})}}"><i class="txt-red float-right fas fa-heart"></i></a>
+                    {% else %}
+                        <a href="{{ path('offers_add_bookmark', {id: offer.id})}}"><i class="txt-red float-right far fa-heart"></i></a>
+                    {% endif %}
+                {% else %}
+                    <a class="modal-trigger" data-target="modal-login"><i class="txt-red float-right far fa-heart"></i></a>
+                {% endif %}
+            </div>
+            <div class="card-content">
+                <p class="mb-2"><b>Catégorie :  {{ offer.categories }}</b></p>
+                <p>{{ offer.content | raw }}</p>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+
+<div class="float-right">
+    {% include 'partials/pagination.html.twig' %}
+</div>
+
+
+{# MODAL START #}
+    <div class="modal shadow-1 rounded-3 white falling" id="modal-login" data-ax="modal">
+        <div class="modal-header">
+            <b>Favoris</b>
+        </div>
+        <div class="divider"></div>
+        <div class="modal-content">
+            Vous devez être connecté pour pouvoir mettre une annonce en favori.
+            <br>Voulez-vous vous connecter ?
+        </div>
+        <div class="divider"></div>
+        <div class="modal-footer">
+            <a href="{{ path('app_login') }}" class="btn shadow-1 rounded-1 small secondary">Connexion</a>
+            <a href="#" data-target="modal-login" class="btn shadow-1 rounded-1 small primary modal-trigger">Annuler</a>
+        </div>
+    </div>
+{# MODAL END #}

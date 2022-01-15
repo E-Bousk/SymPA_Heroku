@@ -1,66 +1,46 @@
 {% extends 'base.html.twig' %}
 
+{# Variables personalisés #}
+{% set queryParams = app.request.query.all %}
+
 {% block title %}Accueil{% endblock %}
 
-{% block body %}
+{% block javascripts %}
+    <script src="{{ asset('assets/js/filters.js') }}"></script>
+{% endblock %}
 
+{% block body %}
     <h1 class="ml-5 mb-5">Bienvenue sur ce site de petites annonces</h1>
     <div class="container">
-        {{ form(form) }}
+        {# {{ form(form) }} #}
 
         {% for message in app.flashes('success') %}
             <div class="p-3 my-2 rounded-1 green light-4 txt-green txt-dark-4">{{ message }}</div>
         {% endfor %}
 
-        {% for offer in offers %}
-            <div class="card shadow-1 fx-row">
-                <div class="px-4 py-4 primary d-flex vcenter fx-center">
-                    <img src="{{ asset('uploads/images/offers/' ~ offer.images[0].name) | imagine_filter('square') }}" alt="{{ offer.title }}">
-                </div>
-                <div class="flex fx-col fx-grow">
-                    <div class="card-header">
-                        <a href="{{ path('offers_details', {slug: offer.slug}) }}">{{offer.title}}</a>
-                        {% if app.user %}
-                            {% set bookmarked = false %}
-                            {% for favoris in offer.favoris %}
-                                {% if favoris == app.user %}
-                                    {% set bookmarked = true %}
-                                {% endif %}
-                            {% endfor %}
-                            {% if bookmarked %}
-                                <a href="{{ path('offers_remove_bookmark', {id: offer.id})}}"><i class="txt-red float-right fas fa-heart"></i></a>
-                            {% else %}
-                                <a href="{{ path('offers_add_bookmark', {id: offer.id})}}"><i class="txt-red float-right far fa-heart"></i></a>
-                            {% endif %}
+        <div class="grix xs1 sm5 gutter-0">
+            <div class="col-xs1">
+                <p>Filtrer</p>
+                <form id="filters">
+                    {% for categorie in categories %}
+                        {# Vérifie si la catégorie est dans les paramètres #}
+                        {% if queryParams is not empty and queryParams.categories is defined %}
+                            {% set checked = (categorie.id in queryParams.categories) ? "checked" : "" %}
                         {% else %}
-                            <a class="modal-trigger" data-target="modal-login"><i class="txt-red float-right far fa-heart"></i></a>
+                            {% set checked = "" %}
                         {% endif %}
-                    </div>
-                    <div class="card-content">
-                        <p class="mb-2"><b>Catégorie :  {{ offer.categories }}</b></p>
-                        <p>{{ offer.content | raw }}</p>
-                    </div>
-                </div>
+                        <p>
+                            <input type="checkbox" name="categories[]" id="cat{{ categorie.id }}" value="{{ categorie.id }}" {{ checked }}>
+                            <label for="cat{{ categorie.id }}">{{ categorie.name }}</label>
+                        </p>
+                    {% endfor %}
+                    <input type="hidden" name="page" value="{{ page }}">                        
+                </form>
             </div>
-        {% endfor %}
-    </div>
+            <div class="col-xs1 col-sm4" id="content">
+                {% include "main/_content.html.twig" %}
+            </div>
+        </div>
 
-    {# MODAL START #}
-    <div class="modal shadow-1 rounded-3 white falling" id="modal-login" data-ax="modal">
-        <div class="modal-header">
-            <b>Favoris</b>
-        </div>
-        <div class="divider"></div>
-        <div class="modal-content">
-            Vous devez être connecté pour pouvoir mettre une annonce en favori.
-            <br>Voulez-vous vous connecter ?
-        </div>
-        <div class="divider"></div>
-        <div class="modal-footer">
-            <a href="{{ path('app_login') }}" class="btn shadow-1 rounded-1 small secondary">Connexion</a>
-            <a href="#" data-target="modal-login" class="btn shadow-1 rounded-1 small primary modal-trigger">Annuler</a>
-        </div>
     </div>
-    {# MODAL END #}
-
 {% endblock %}

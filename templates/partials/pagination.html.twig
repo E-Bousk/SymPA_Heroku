@@ -1,0 +1,33 @@
+{# Variables personalisés #}
+{% set queryParams = app.request.query.all %}
+{% set queryString = queryParams | filter((v, k) => k != "page" and k != "ajax") | url_encode %}
+
+{% set lastPage = (total / limit) | round(0, 'ceil') %}
+
+<ul class="pagination">
+    <li class="{{ (page == 1) ? 'disabled' : '' }}">
+        <a href="?page=1&{{ queryString }}">
+            <i class="fas fa-step-backward"></i>
+        </a>
+    </li>
+    <li class="{{ (page == 1) ? 'disabled' : '' }}">
+        <a href="{{ (page > 1) ? '?page=' ~  (page - 1) : '' }}&{{ queryString }}">
+            <i class="fas fa-angle-left"></i>
+        </a>
+    </li>
+    {% for number in 1..lastPage %}
+        <li class="{{ (page == number) ? 'active' : ''}}">
+            <a href="?page={{ number }}&{{ queryString }}">{{ number }}</a>
+        </li>
+    {% endfor %}
+    <li class="{{ (page == lastPage) ? 'disabled' : '' }}">
+        <a href="{{ (page < lastPage) ? '?page=' ~  (page + 1) : '' }}&{{ queryString }}">
+            <i class="fas fa-angle-right"></i>
+        </a>
+    </li>
+    <li class="{{ (page == lastPage) ? 'disabled' : '' }}">
+        <a href="?page={{ lastPage }}&{{ queryString }}">
+            <i class="fas fa-step-forward"></i>
+        </a>
+    </li>
+</ul>
