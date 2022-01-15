@@ -3,11 +3,7 @@
 {% block title %}Détail de l'annonce « {{offer.title}} » {% endblock %}
 
 {% block javascripts %}
-	<script>
-		window.onload = () => {
-			document.querySelector("#annonce_contact_title").value = "{{ offer.title | raw }}";
-		}
-	</script>
+	    <script src="{{ asset('assets/js/contact-and-comment.js') }}"></script>
 {% endblock %}
 
 {% block body %}
@@ -47,12 +43,38 @@
 				</div>
 			</div>
 		</div>
+		<div class="grix xs2 sm3 gutter-0 card">
+			<div class="col-xs2 col-sm3">
+				<h2>Liste des commentaires</h2>
+				{% for comment in offer.comments %}
+					{% if comment.parent == null %}
+						<hr>
+						<h4>Commentaire de {{ comment.nickname }}</h4>
+						<p><b>Publié le {{ comment.createdAt | date('d/m/Y à H:i') }}</b></p>
+						<div class="ml-2">{{ comment.content | raw }}</div>
+						<p><a class="btn shadow-1 rounded-1 small primary" href="#ajout-commentaire" data-reply data-id="{{ comment.id }}">Répondre</a></p>
+						{# Affiche les réponses #}
+						{% for reply in comment.replies %}
+							<p class="ml-3"><b>Réponse publié par {{ reply.nickname }} le {{ reply.createdAt | date('d/m/Y à H:i') }}</b></p>
+							<div class="ml-5">{{ reply.content | raw }}</div>
+						{% endfor %}
+					{% endif %}
+				{% endfor %}
+			</div>
+			<div class="col-xs2 col-sm3" id="ajout-commentaire">
+				<h2>Ajouter un commentaire</h2>
+				{{ form(commentForm) }}
+			</div>
+		</div>
 	</div>
 	<div class="modal shadow-1 white falling" id="modal-contact" data-ax="modal">
 		<div class="modal-header">Contacter l'annonceur</div>
 		<div class="divider"></div>
 		{{ form_start(form) }}
 			<div class="modal-content">
+				<div class="mb-1">
+					{{ form_label(form.title) }}
+				</div>
 				{{ form_widget(form.title) }}
 				<div class="mb-1">
 					{{ form_label(form.email) }}

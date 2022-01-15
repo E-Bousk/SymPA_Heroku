@@ -15,19 +15,20 @@ class AnnonceContactType extends AbstractType
     {
         $builder
             ->add('title', TextType::class, [
+                'label' => 'Titre de l\'annonce :',
                 'disabled' => true,
                 'attr' => [
                     'class' => 'mb-3 form-control rounded-1'
                 ]
             ])
             ->add('email', EmailType::class, [
-                'label' => 'Votre email : ',
+                'label' => 'Votre email :',
                 'attr' => [
                     'class' => 'mb-3 form-control rounded-1'
                 ]
             ])
             ->add('message', CKEditorType::class, [
-                'label' => 'Votre message : '
+                'label' => 'Votre message :'
             ])
         ;
     }

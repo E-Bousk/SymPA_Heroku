@@ -4,9 +4,11 @@ namespace App\Controller;
 
 use App\Entity\Images;
 use App\Entity\Annonces;
+use App\Entity\Comments;
 use App\Form\OffersType;
 use App\Form\SearchOfferType;
 use App\Form\AnnonceContactType;
+use App\Form\CommentsType;
 use App\Repository\AnnoncesRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -102,7 +104,7 @@ class OffersController extends AbstractController
     /**
      * @Route("/details/{slug}", name="details")
      */
-    public function details($slug, AnnoncesRepository $annoncesRepository, Request $request, MailerInterface $mailer): Response
+    public function details($slug, AnnoncesRepository $annoncesRepository, Request $request, MailerInterface $mailer, EntityManagerInterface $em): Response
     {
         $offer = $annoncesRepository->findOneBy(['slug' => $slug]);
 
@@ -134,9 +136,34 @@ class OffersController extends AbstractController
             return $this->redirectToRoute('offers_details', ['slug' => $offer->getSlug()]);
         }
 
+        /** PARTIE COMMENTAIRES */
+        $comment = new Comments;
+        $commentForm = $this->createForm(CommentsType::class, $comment);
+        $commentForm->handleRequest($request);
+
+        if ($commentForm->isSubmitted() && $commentForm->isValid()) {
+            $comment->setCreatedAt(New \DateTime());
+            $comment->setAnnonces($offer);
+
+            // Récupère le contenu du champ « ParentId »
+            $parentId = $commentForm->get('parentId')->getData();
+            // Retrouve le commentaire correspondant
+            if ($parentId != null) {
+                $parent = $em->getRepository(Comments::class)->find($parentId);
+            }
+            $comment->setParent($parent ?? null);
+
+            $em->persist($comment);
+            $em->flush();
+
+            $this->addFlash('message', 'Votre commentaire a bien été envoyé !');
+            return $this->redirectToRoute('offers_details', ['slug' => $slug]);
+        }
+
         return $this->render('offers/details.html.twig', [
             'offer' => $offer,
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'commentForm' => $commentForm->createView()
         ]);
     }
 

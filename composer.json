@@ -6,6 +6,7 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "antishov/doctrine-extensions-bundle": "^1.4",
+        "ckeditor/ckeditor": "^4.17",
         "composer/package-versions-deprecated": "1.11.99.4",
         "doctrine/annotations": "^1.0",
         "doctrine/doctrine-bundle": "^2.3",
