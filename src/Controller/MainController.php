@@ -3,15 +3,13 @@
 namespace App\Controller;
 
 use App\Form\ContactType;
-use App\Form\SearchOfferType;
 use App\Repository\AnnoncesRepository;
 use App\Repository\CategoriesRepository;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use App\Services\SendMailService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 class MainController extends AbstractController
@@ -24,8 +22,6 @@ class MainController extends AbstractController
         CategoriesRepository $categoriesRepository,
         Request $request): Response
     {
-
-
         /** PAGINATION */
         // Définit le nombre d'élément par page
         $limit = 5;
@@ -59,26 +55,24 @@ class MainController extends AbstractController
     /**
      * @Route("/contact", name="contact")
      */
-    public function contact(Request $request, MailerInterface $mailer): Response
+    public function contact(Request $request, SendMailService $sendMailService): Response
     {
         $form = $this->createForm(ContactType::class);
 
         $contact = $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $email = (new TemplatedEmail())
-                ->from($contact->get('email')->getData())
-                ->to('petites.annonces@gmail.com')
-                ->subject('Contact depuis le site « Petites annonces »')
-                ->htmlTemplate('emails/contact.html.twig')
-                ->context([
+            $sendMailService->send(
+                $contact->get('email')->getData(),
+                'petites.annonces@gmail.com',
+                'Contact depuis le site « Petites annonces »',
+                'contact',
+                [
                     'mail' => $contact->get('email')->getData(),
                     'sujet' => $contact->get('sujet')->getData(),
                     'message' => $contact->get('message')->getData()
-                ])
-            ;
-
-            $mailer->send($email);
+                ]
+            );
 
             $this->addFlash('message', 'Email de contact envoyé');
 

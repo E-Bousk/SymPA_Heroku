@@ -25,7 +25,7 @@ class UsersFixtures extends Fixture
         for ($nbUsers = 1; $nbUsers <= 30; $nbUsers++) {
             $user = new Users();
             if ($nbUsers === 1) {
-                $user->setEmail('admin@gmail.com');
+                $user->setEmail('admin@symfony.com');
                 $user->setRoles(['ROLE_ADMIN']); 
                 $user->setPassword($this->encoder->encodePassword($user, 'root'));
             } else {

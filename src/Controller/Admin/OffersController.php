@@ -46,7 +46,7 @@ class OffersController extends AbstractController
 		$images = $annonce->getImages();
 		if ($images) {
 			foreach ($images as $image) {
-				$nomImage = sprintf("%s/offers/%s", $this->getParameter('images_directory'), $image->getName());
+				$nomImage = sprintf("%s/%s", $this->getParameter('images_directory'), $image->getName());
 				if (file_exists($nomImage)) {
 					unlink($nomImage);
 				}

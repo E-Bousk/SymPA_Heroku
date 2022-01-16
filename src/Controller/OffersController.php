@@ -10,10 +10,10 @@ use App\Form\SearchOfferType;
 use App\Form\AnnonceContactType;
 use App\Form\CommentsType;
 use App\Repository\AnnoncesRepository;
+use App\Services\ManagePicturesService;
+use App\Services\SendMailService;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -66,7 +66,7 @@ class OffersController extends AbstractController
     /**
      * @Route("/new", name="new", methods={"GET", "POST"})
      */
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, ManagePicturesService $managePicturesService): Response
     {
         $annonce = new Annonces();
         $form = $this->createForm(OffersType::class, $annonce);
@@ -79,14 +79,16 @@ class OffersController extends AbstractController
             // Récupère les images transmises
             $images = $form->get('images')->getData();
 
-            // Boucle sur les images
-            foreach($images as $image) {
-                // Utilise la méthode créée pour générer un nom,
-                // copier le fichier dans répertoire "upload/images/annonces"
-                // et sauvegarder ce nom dans la BDD
-                $img = $this->saveImage($image);
-                $annonce->addImage($img);
-            }
+            // // Boucle sur les images
+            // foreach($images as $image) {
+            //     // Utilise la méthode créée (plus bas) pour générer un nom,
+            //     // copier le fichier dans répertoire "upload/images/annonces"
+            //     // et sauvegarder ce nom dans la BDD
+            //     $img = $this->saveImage($image);
+            //     $annonce->addImage($img);
+            // }
+            // Remplacé par 'managePicturesService':
+            $managePicturesService->addImage($images, $annonce);
 
             // NOTE: On ajoute « cascade={"persist"} » sur la propriété « images » dans l'entité « annonces »
             $entityManager->persist($annonce);
@@ -104,7 +106,13 @@ class OffersController extends AbstractController
     /**
      * @Route("/details/{slug}", name="details")
      */
-    public function details($slug, AnnoncesRepository $annoncesRepository, Request $request, MailerInterface $mailer, EntityManagerInterface $em): Response
+    public function details(
+        $slug,
+        AnnoncesRepository $annoncesRepository,
+        Request $request,
+        SendMailService $sendMailService,
+        EntityManagerInterface $em
+        ): Response
     {
         $offer = $annoncesRepository->findOneBy(['slug' => $slug]);
 
@@ -117,20 +125,18 @@ class OffersController extends AbstractController
         $contact = $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $email = (new TemplatedEmail())
-                ->from($contact->get('email')->getData())
-                ->to($offer->getUsers()->getEmail())
-                ->subject(sprintf('Contact au sujet de votre annonce « %s ».', $offer->getTitle()))
-                ->htmlTemplate('emails/contact_offers.html.twig')
-                ->context([
+            $sendMailService->send(
+                $contact->get('email')->getData(),
+                $offer->getUsers()->getEmail(),
+                sprintf('Contact au sujet de votre annonce « %s ».', $offer->getTitle()),
+                'contact_offers',
+                [
                     'offer' => $offer,
                     // NOTE : ‼ « email » est un nom réservé ‼
                     'mail' => $contact->get('email')->getData(),
                     'message' => $contact->get('message')->getData()
-                ])
-            ;
-
-            $mailer->send($email);
+                ]
+            );
 
             $this->addFlash('message', 'Votre email a bien été envoyé');
             return $this->redirectToRoute('offers_details', ['slug' => $offer->getSlug()]);
@@ -170,7 +176,12 @@ class OffersController extends AbstractController
     /**
      * @Route("/edit/{id}", name="edit", methods={"GET", "POST"})
      */
-    public function edit(Request $request, Annonces $annonce, EntityManagerInterface $entityManager): Response
+    public function edit(
+        Request $request,
+        Annonces $annonce,
+        EntityManagerInterface $entityManager,
+        ManagePicturesService $managePicturesService
+        ): Response
     {
         $form = $this->createForm(OffersType::class, $annonce);
         $form->handleRequest($request);
@@ -178,10 +189,12 @@ class OffersController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $images = $form->get('images')->getData();
 
-            foreach ($images as $image) {
-                $img = $this->saveImage($image);
-                $annonce->addImage($img);
-            }
+            // foreach ($images as $image) {
+            //     $img = $this->saveImage($image);
+            //     $annonce->addImage($img);
+            // }
+            // Remplacé par 'managePicturesService' :
+            $managePicturesService->addImage($images, $annonce);
 
             $entityManager->flush();
 
@@ -252,7 +265,7 @@ class OffersController extends AbstractController
         // Vérifie que le CSRF token soit valide
         if($this->isCsrfTokenValid('delete'.$image->getId(), $data['_token'])) {
             // Supprime le fichier du répertoire 'upload/images/offers'
-            unlink($this->getParameter('images_directory').'/offers/'.$image->getName());
+            unlink($this->getParameter('images_directory').'/'.$image->getName());
 
             // Supprime l'entrée de la BDD
             $em = $this->getDoctrine()->getManager();
@@ -266,32 +279,32 @@ class OffersController extends AbstractController
         }
     }
 
+     // Méthode remplacée par 'managePicturesService':
+    // /**
+    //  * Lors de l'ajout d'image pour une annonce :
+    //  * - Génère un nom unique aléatoire
+    //  * - Déplace le fichier dans le répèrtoire 'upload/images/offers'
+    //  * - Enregistre le nom dans la BDD (entité 'Images')
+    //  * 
+    //  * @param mixed $image 
+    //  * @return Images 
+    //  */
+    // private function saveImage($image)
+    // {
+    //     // Génère un nouveau nom (unique) de fichier
+    //     $fichier = md5(uniqid()) . '.' . $image->guessExtension();
 
-    /**
-     * Lors de l'ajout d'image pour une annonce :
-     * - Génère un nom unique aléatoire
-     * - Déplace le fichier dans le répèrtoire 'upload/images/offers'
-     * - Enregistre le nom dans la BDD (entité 'Images')
-     * 
-     * @param mixed $image 
-     * @return Images 
-     */
-    private function saveImage($image)
-    {
-        // Génère un nouveau nom (unique) de fichier
-        $fichier = md5(uniqid()) . '.' . $image->guessExtension();
+    //     // Copie ce fichier dans le dossier 'upload/images/offers'
+    //     $image->move(
+    //         $this->getParameter('images_directory'),
+    //         $fichier
+    //     );
 
-        // Copie ce fichier dans le dossier 'upload/images/offers'
-        $image->move(
-            $this->getParameter('images_directory').'/offers',
-            $fichier
-        );
+    //     // Stock le nom de l'image dans la BDD
+    //     $img = new Images;
+    //     $img->setName($fichier);
 
-        // Stock le nom de l'image dans la BDD
-        $img = new Images;
-        $img->setName($fichier);
-
-        // Retourne l'objet
-        return $img;
-    }
+    //     // Retourne l'objet
+    //     return $img;
+    // }
 }
