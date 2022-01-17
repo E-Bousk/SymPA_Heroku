@@ -183,6 +183,8 @@ class OffersController extends AbstractController
         ManagePicturesService $managePicturesService
         ): Response
     {
+        $this->denyAccessUnlessGranted('offer_edit', $annonce);
+        
         $form = $this->createForm(OffersType::class, $annonce);
         $form->handleRequest($request);
 

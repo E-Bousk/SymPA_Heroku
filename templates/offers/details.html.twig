@@ -40,6 +40,20 @@
 					<p>
 						<button class="mt-3 btn shadow-1 rounded-1 small primary modal-trigger" data-target="modal-contact">Contacter l'annonceur</button>
 					</p>
+					{% if is_granted('offer_edit', offer) %}
+						<p>
+							<a class="mt-3 btn shadow-1 rounded-1 small primary" href="{{ path('offers_edit', { id: offer.id }) }}">
+								Modifier
+							</a>
+						</p>
+					{% endif %}
+					{% if is_granted('offer_delete', offer) %}
+						<p>
+							<a class="mt-3 btn shadow-1 rounded-1 small red" href="{{ path('offers_delete', { id: offer.id }) }}">
+								Supprimer
+							</a>
+						</p>
+					{% endif %}
 				</div>
 			</div>
 		</div>
