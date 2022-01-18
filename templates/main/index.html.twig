@@ -12,8 +12,7 @@
 {% block body %}
     <h1 class="ml-5 mb-5">Bienvenue sur ce site de petites annonces</h1>
     <div class="container">
-        {# {{ form(form) }} #}
-
+    
         {% for message in app.flashes('success') %}
             <div class="p-3 my-2 rounded-1 green light-4 txt-green txt-dark-4">{{ message }}</div>
         {% endfor %}

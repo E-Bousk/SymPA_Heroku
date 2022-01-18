@@ -18,12 +18,20 @@
     <body>
         <header>
             <nav class="navbar shadow-1 primary">
-                <a href="{{ path('app_home') }}" class="navbar-brand">Petites Annonces</a>
+                <a href="{{ path('app_home') }}" class="navbar-brand">{{ titre }}</a>
                 <div class="navbar-menu ml-auto">
                     <a class="navbar-link" href="{{ path('app_home') }}">Accueil</a>
+                    <div class="dropdown" id="dropdown" data-ax="dropdown">
+                         <div class="navbar-link dropdown-trigger">
+                            Catégories
+                        </div>
+                        <div class="dropdown-content white shadow-1 rounded-1">
+                            {% for categ in categ.categories %}
+                                <a class="dropdown-item" href="">{{ categ.name }}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
                     <a class="navbar-link" href="{{ path('app_login') }}">Connexion</a>
-                    <a class="navbar-link" href="#">Link 3</a>
-                    <a class="navbar-link" href="#">Link 4</a>
                 </div>
             </nav>
         </header>
@@ -33,7 +41,7 @@
         </main>
 
         <footer class="footer primary">
-            Copyright © 2021 - Petites Annonces
+            Copyright © 2021 - {{ titre }}
         </footer>
     </body>
 </html>
