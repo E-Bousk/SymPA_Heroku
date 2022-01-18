@@ -5,11 +5,11 @@ namespace App\Form;
 use App\Entity\Annonces;
 use App\Entity\Categories;
 use Symfony\Component\Form\AbstractType;
-use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
@@ -24,9 +24,7 @@ class OffersType extends AbstractType
                     'class' => 'mb-3 form-control rounded-1'
                 ]
             ])
-            ->add('content', CKEditorType::class,[
-                'label' => 'Contenu :',
-            ])
+            ->add('content', HiddenType::class)
             ->add('categories', EntityType::class, [
                 'label' => 'Catégorie :',
                 'label_attr' => [

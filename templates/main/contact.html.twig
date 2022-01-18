@@ -2,7 +2,10 @@
 
 {% block title %}Nous contacter{% endblock %}
 
-
+{% block javascripts %}
+    <script src="{{ asset('ckeditor5/ckeditor.js') }}" defer></script>
+    <script src="{{ asset('assets/js/app-ckeditor.js') }}" defer></script>
+{% endblock %}
 
 {% block body %}
     {% for message in app.flashes('message') %}
@@ -10,7 +13,11 @@
     {% endfor %}
 	<h1 class="ml-5 mb-5 h2">Nous contacter</h1>
 	<div class="container">
-        {{ form(form) }}
+        {{ form_start(form) }}
+            {{ form_row(form.email) }}
+            {{ form_row(form.sujet) }}
+            <p>Message :</p>
+            <div id="editor"></div>
+        {{ form_end(form) }}
 	</div>
 {% endblock %}
-

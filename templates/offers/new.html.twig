@@ -2,6 +2,11 @@
 
 {% block title %}Nouvelle Annonce{% endblock %}
 
+{% block javascripts %}
+    <script src="{{ asset('ckeditor5/ckeditor.js') }}" defer></script>
+    <script src="{{ asset('assets/js/app-ckeditor.js') }}" defer></script>
+{% endblock %}
+
 {% block body %}
     <h1 class="ml-5 mb-5">Créer une nouvelle annonce</h1>
     <div class="container">
