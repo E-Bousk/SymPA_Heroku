@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter une région{% endblock %}
+
+{% block javascripts %}
+  <script src="{{ asset('assets/js/region-departement-add.js') }}" defer></script>
+{% endblock %}
+
+{% block body %}
+  <h1 class="ml-5 mb5">Ajouter une région</h1>
+  <div class="container">
+    <div class="form-field">
+      {{ form_start(form) }}
+        {{ form_row(form.name) }}
+        <div class="" id="departements" data-prototype="{{ form_row(form.departements.vars.prototype) | e('html_attr') }}">
+          {{ form_row(form.departements) }}
+          <span></span>
+        </div>
+      {{ form_end(form) }}
+    </div>
+  </div>
+{% endblock %}
