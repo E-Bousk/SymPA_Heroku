@@ -11,6 +11,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 
 class MainController extends AbstractController
 {
@@ -20,7 +22,9 @@ class MainController extends AbstractController
     public function index(
         AnnoncesRepository $annoncesRepository,
         CategoriesRepository $categoriesRepository,
-        Request $request): Response
+        Request $request,
+        CacheInterface $cache
+        ): Response
     {
         /** PAGINATION */
         // Définit le nombre d'élément par page
@@ -47,7 +51,12 @@ class MainController extends AbstractController
         }
 
         // Récupère toutes les catégories
-        $categories = $categoriesRepository->findAll();
+        // $categories = $categoriesRepository->findAll();
+        // Mise en cache :
+        $categories = $cache->get('categories_list', function(ItemInterface $item) use ($categoriesRepository) {
+            $item->expiresAfter(3600);
+            return $categoriesRepository->findAll();
+        });
 
         return $this->render('main/index.html.twig', compact('limit', 'page', 'offers', 'total', 'categories'));
     }

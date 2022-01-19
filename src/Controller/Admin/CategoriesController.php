@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Cache\CacheInterface;
 
 /**
  * @Route("/admin/categories", name="admin_categories_")
@@ -29,7 +30,7 @@ class CategoriesController extends AbstractController
     /**
      * @Route("/create", name="create")
      */
-    public function ajoutCategories(Request $request): Response
+    public function ajoutCategories(Request $request, CacheInterface $cache): Response
     {
         $categorie = new Categories;
 
@@ -42,6 +43,9 @@ class CategoriesController extends AbstractController
             $em->persist($categorie);
             $em->flush();
 
+            // Supprime le cache mis en place dans « mainController »
+            $cache->delete('categories_list');
+
             return $this->redirectToRoute('admin_categories_home');
         }
 
@@ -53,7 +57,7 @@ class CategoriesController extends AbstractController
     /**
      * @Route("/edit/{id}", name="edit")
      */
-    public function editCategories(Categories $categorie, Request $request): Response
+    public function editCategories(Categories $categorie, Request $request, CacheInterface $cache): Response
     {
         $form = $this->createForm(CategoriesType::class, $categorie);
 
@@ -63,6 +67,9 @@ class CategoriesController extends AbstractController
             $em = $this->getDoctrine()->getManager();
             $em->persist($categorie);
             $em->flush();
+
+            // On supprime le cache mis en place dans « mainController »
+            $cache->delete('categories_list');
 
             return $this->redirectToRoute('admin_categories_home');
         }
