@@ -25,7 +25,7 @@ class AnnoncesRepository extends ServiceEntityRepository
     public function search($mots = null, $categorie = null)
     {
         $query = $this->createQueryBuilder('a')
-            ->where('a.active = 1');
+            ->where('a.active = true');
 
         if ($mots != null) {
             $query->andWhere('MATCH_AGAINST(a.title, a.content) AGAINST(:mots boolean)>0')
@@ -85,7 +85,7 @@ class AnnoncesRepository extends ServiceEntityRepository
     public function getPaginatedOffers($page, $limit = 5, $filters = null)
     {
         $query = $this->createQueryBuilder('a')
-            ->where('a.active = 1');
+            ->where('a.active = true');
 
         // filtre les données
         if ($filters != null){
@@ -108,7 +108,7 @@ class AnnoncesRepository extends ServiceEntityRepository
     {
         $query = $this->createQueryBuilder('a')
             ->select('count(a)')
-            ->where('a.active = 1')
+            ->where('a.active = true')
         ;
         // filtre les données
         if ($filters != null){
